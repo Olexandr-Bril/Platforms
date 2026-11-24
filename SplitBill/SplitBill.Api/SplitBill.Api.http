@@ -1,0 +1,66 @@
+@host = http://localhost:5100
+
+### Реєстрація Ivan
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "name": "Ivan", "email": "ivan@test.com", "password": "123456" }
+
+### Реєстрація Olena
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "name": "Olena", "email": "olena@test.com", "password": "123456" }
+
+### Вхід (токен з відповіді вставити в @token)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "ivan@test.com", "password": "123456" }
+
+###
+@token = PASTE_TOKEN
+
+### Створити групу
+POST {{host}}/api/groups
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Kyiv trip", "memberEmails": ["olena@test.com"] }
+
+### Мої групи
+GET {{host}}/api/groups
+Authorization: Bearer {{token}}
+
+### Група
+GET {{host}}/api/groups/1
+Authorization: Bearer {{token}}
+
+### Витрата порівну (Ivan id = 1)
+POST {{host}}/api/groups/1/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "description": "Pizza", "amount": 300, "paidById": 1, "splitType": "Equal" }
+
+### Витрата точними сумами
+POST {{host}}/api/groups/1/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "description": "Taxi", "amount": 150, "paidById": 1, "splitType": "Exact", "shares": [ { "userId": 1, "amount": 50 }, { "userId": 2, "amount": 100 } ] }
+
+### Всі витрати
+GET {{host}}/api/groups/1/expenses
+Authorization: Bearer {{token}}
+
+### Баланси
+GET {{host}}/api/groups/1/balances
+Authorization: Bearer {{token}}
+
+### Повернути борг (робити з токеном Olena)
+POST {{host}}/api/groups/1/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "toUserId": 1, "amount": 100 }
